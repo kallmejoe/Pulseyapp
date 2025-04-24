@@ -109,7 +109,7 @@ export const DesktopNavigation: React.FC = () => {
                     className="text-2xl font-bold tracking-tight gradient-text"
                     style={{ fontFamily: font.heading }}
                 >
-                    FitSync
+                    PULSE
                 </h1>
                 <p className="text-xs text-muted-foreground">Health & Fitness</p>
             </div>

@@ -25,7 +25,7 @@ export const Signup: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
+
     // Simulate signup process
     setTimeout(() => {
       // In a real app, you would send user data to a server here
@@ -43,15 +43,15 @@ export const Signup: React.FC = () => {
         className="w-full max-w-md"
       >
         <div className="text-center mb-8">
-          <h1 
+          <h1
             className="text-3xl font-bold gradient-text mb-2"
-            style={{ 
+            style={{
               background: `linear-gradient(90deg, ${colors.primary}, ${colors.accent})`,
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent'
             }}
           >
-            FitSync
+            PULSE
           </h1>
           <p className="text-muted-foreground">Start your health journey today</p>
         </div>
@@ -78,7 +78,7 @@ export const Signup: React.FC = () => {
                   />
                 </div>
               </div>
-              
+
               <div className="space-y-2">
                 <label htmlFor="email" className="text-sm font-medium">
                   Email
@@ -153,8 +153,8 @@ export const Signup: React.FC = () => {
                 </label>
               </div>
 
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 className="w-full"
                 disabled={isSubmitting}
               >
@@ -182,7 +182,7 @@ export const Signup: React.FC = () => {
             </Link>
           </p>
         </div>
-        
+
         <div className="mt-8 flex justify-center space-x-4">
           <div className="w-10 h-10 rounded-full bg-muted/30 flex items-center justify-center">
             <span className="text-lg">🏃‍♂️</span>

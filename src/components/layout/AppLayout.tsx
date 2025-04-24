@@ -246,7 +246,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
                                     WebkitBackgroundClip: 'text',
                                     WebkitTextFillColor: 'transparent'
                                 }}>
-                                    FitSync
+                                    PULSE
                                 </span>
                             </span>
                         </Link>
@@ -278,7 +278,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
                                         WebkitBackgroundClip: 'text',
                                         WebkitTextFillColor: 'transparent'
                                     }}>
-                                        FitSync
+                                        PULSE
                                     </span>
                                 </span>
                             </Link>

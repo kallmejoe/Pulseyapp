@@ -4,12 +4,12 @@ import { Card, CardContent } from "../../components/ui/card";
 import { Button } from "../../components/ui/button";
 import {
     Activity,
-    Headphones,
-    Gamepad,
+    Dumbbell,
+    Heart,
     Calendar,
     ChevronRight,
     Timer,
-    Music,
+    Play,
     Plus,
     Droplets,
     Trophy,
@@ -23,10 +23,9 @@ import { FadeIn, SlideUp } from "../../lib/animations";
 
 export const Page = (): JSX.Element => {
     const navigate = useNavigate();
-    const { meals, totalCalories, totalProtein, waterIntake, updateWaterIntake } = useMeals();
-    const { theme, musicMode, colors, font } = useTheme();
+    const { meals, totalCalories, totalProtein, waterIntake, updateWaterIntake, workouts } = useMeals();
+    const { theme, colors, font } = useTheme();
     const [upcomingMeals, setUpcomingMeals] = useState<any[]>([]);
-    const [showEqualizer, setShowEqualizer] = useState(false);
 
     // Get the current time and format as a number (e.g., 14:30 -> 14.5)
     const getCurrentTimeNumber = () => {
@@ -48,7 +47,7 @@ export const Page = (): JSX.Element => {
         return hours + minutes / 60;
     };
 
-    // Get upcoming tracks by filtering
+    // Get upcoming meals by filtering
     useEffect(() => {
         const currentTime = getCurrentTimeNumber();
 
@@ -68,59 +67,62 @@ export const Page = (): JSX.Element => {
                     return 0;
                 }
             })
-            .slice(0, 3) // Take only the next 3 upcoming tracks
+            .slice(0, 3) // Take only the next 3 upcoming meals
             .map(meal => ({
                 time: meal.time,
                 name: meal.name,
                 description: meal.foods.join(", "),
-                duration: Math.floor(Math.random() * 4) + 2 + ":" + (Math.floor(Math.random() * 60)).toString().padStart(2, '0')
+                calories: meal.calories
             }));
 
         setUpcomingMeals(upcoming);
 
-        // If no upcoming tracks, show recommendations
+        // If no upcoming meals, show recommendations
         if (upcoming.length === 0) {
             setUpcomingMeals([
-                { time: "12:30 PM", name: "Synthwave Workout", description: "Intense cardio session", duration: "4:25" },
-                { time: "4:00 PM", name: "Chill Recovery", description: "Post-workout relaxation", duration: "3:18" },
-                { time: "7:30 PM", name: "Evening Beats", description: "Strength training mix", duration: "5:42" }
+                { time: "12:30 PM", name: "Lunch", description: "Grilled chicken and vegetables", calories: 450 },
+                { time: "4:00 PM", name: "Snack", description: "Greek yogurt with berries", calories: 200 },
+                { time: "7:30 PM", name: "Dinner", description: "Salmon with quinoa", calories: 550 }
             ]);
         }
     }, [meals]);
 
-    // Toggle equalizer effect when music mode changes
-    useEffect(() => {
-        setShowEqualizer(musicMode === 'on');
-    }, [musicMode]);
+    // Get enrolled workouts
+    const enrolledWorkouts = workouts.filter(workout => workout.enrolled);
+
+    // Use top workouts if none enrolled
+    const activeWorkouts = enrolledWorkouts.length > 0
+        ? enrolledWorkouts
+        : workouts.slice(0, 3);
 
     const quickActions = [
-        { icon: <Headphones className="h-6 w-6" />, label: "Tracks", path: "/meal-logger" },
-        { icon: <Activity className="h-6 w-6" />, label: "Stats", path: "/progress" },
-        { icon: <Gamepad className="h-6 w-6" />, label: "Games", path: "/ai-assistant" },
-        { icon: <Share2 className="h-6 w-6" />, label: "Social", path: "/community" }
+        { icon: <Heart className="h-6 w-6" />, label: "Nutrition", path: "/meal-logger" },
+        { icon: <Activity className="h-6 w-6" />, label: "Progress", path: "/progress" },
+        { icon: <Dumbbell className="h-6 w-6" />, label: "Workouts", path: "/workouts" },
+        { icon: <Share2 className="h-6 w-6" />, label: "Community", path: "/community" }
     ];
 
     const playerStats = [
         {
-            label: "Score",
+            label: "Calories",
             value: totalCalories.toLocaleString(),
-            target: "5,000",
+            target: "2,000",
             color: "bg-primary/10",
-            progress: Math.min(totalCalories / 5000, 1) * 100,
-            icon: <Trophy className="h-5 w-5 text-primary" />
+            progress: Math.min(totalCalories / 2000, 1) * 100,
+            icon: <Heart className="h-5 w-5 text-primary" />
         },
         {
-            label: "Skill Points",
-            value: `${totalProtein}`,
-            target: "120",
+            label: "Protein",
+            value: `${totalProtein}g`,
+            target: "120g",
             color: "bg-secondary/10",
             progress: Math.min(totalProtein / 120, 1) * 100,
-            icon: <Gamepad className="h-5 w-5 text-secondary" />
+            icon: <Dumbbell className="h-5 w-5 text-secondary" />
         },
         {
-            label: "Energy",
-            value: `${waterIntake * 40}%`,
-            target: "100%",
+            label: "Hydration",
+            value: `${waterIntake}L`,
+            target: "2.5L",
             color: "bg-accent/10",
             progress: Math.min(waterIntake / 2.5, 1) * 100,
             onClick: () => {
@@ -130,17 +132,6 @@ export const Page = (): JSX.Element => {
             icon: <Droplets className="h-5 w-5 text-accent" />
         }
     ];
-
-    // Equalizer animation component
-    const EqualizerAnimation = () => (
-        <div className="equalizer inline-flex items-end h-3 gap-[2px] ml-2 mb-1">
-            <div className="equalizer-bar"></div>
-            <div className="equalizer-bar"></div>
-            <div className="equalizer-bar"></div>
-            <div className="equalizer-bar"></div>
-            <div className="equalizer-bar"></div>
-        </div>
-    );
 
     return (
         <div
@@ -159,15 +150,15 @@ export const Page = (): JSX.Element => {
                         <div className="flex items-center gap-3">
                             <motion.div
                                 animate={{
-                                    rotate: musicMode === 'on' ? [0, 5, 0, -5, 0] : 0
+                                    rotate: [0, 5, 0, -5, 0]
                                 }}
                                 transition={{
-                                    repeat: musicMode === 'on' ? Infinity : 0,
+                                    repeat: Infinity,
                                     repeatDelay: 5,
                                     duration: 0.5
                                 }}
                             >
-                                <Music className="h-7 w-7 text-primary" />
+                                <Activity className="h-7 w-7 text-primary" />
                             </motion.div>
                             <div>
                                 <h1
@@ -180,9 +171,8 @@ export const Page = (): JSX.Element => {
                                     }}
                                 >
                                     PULSE
-                                    {showEqualizer && <EqualizerAnimation />}
                                 </h1>
-                                <p className="text-xs text-muted-foreground">Fitness & Gaming</p>
+                                <p className="text-xs text-muted-foreground">Health & Fitness</p>
                             </div>
                         </div>
                         <Button
@@ -240,14 +230,14 @@ export const Page = (): JSX.Element => {
                     </div>
                 </FadeIn>
 
-                {/* Player Stats */}
+                {/* Nutrition Stats */}
                 <section>
                     <h2
                         className="text-lg font-semibold mb-3 flex items-center gap-2"
                         style={{ fontFamily: font.heading }}
                     >
                         <Trophy className="h-5 w-5 text-primary" />
-                        Player Stats
+                        Nutrition Stats
                     </h2>
                     <div className="dashboard-grid">
                         {playerStats.map((stat, index) => (
@@ -284,34 +274,18 @@ export const Page = (): JSX.Element => {
                                         </div>
 
                                         {/* Progress bar */}
-                                        <div className="mt-3 h-2 bg-muted rounded-full overflow-hidden">
+                                        <div className="mt-4 h-2 w-full bg-primary/10 rounded-full overflow-hidden">
                                             <motion.div
-                                                className="h-full rounded-full"
+                                                className="h-full"
                                                 style={{
-                                                    background: `linear-gradient(90deg, ${stat.label === "Score" ? colors.primary :
-                                                        stat.label === "Skill Points" ? colors.secondary :
-                                                            colors.accent
-                                                        }, ${stat.label === "Score" ? colors.accent :
-                                                            stat.label === "Skill Points" ? colors.primary :
-                                                                colors.secondary
-                                                        })`
+                                                    background: `linear-gradient(to right, ${colors.primary}, ${colors.accent})`,
+                                                    width: `${stat.progress}%`
                                                 }}
                                                 initial={{ width: 0 }}
                                                 animate={{ width: `${stat.progress}%` }}
-                                                transition={{ duration: 1, ease: "easeOut" }}
+                                                transition={{ duration: 1 }}
                                             />
                                         </div>
-
-                                        {/* Add energy button */}
-                                        {stat.label === "Energy" && (
-                                            <motion.button
-                                                className="mt-2 w-full bg-background rounded-full py-1 flex items-center justify-center gap-2 text-xs font-medium text-accent"
-                                                whileTap={{ scale: 0.95 }}
-                                            >
-                                                <Droplets className="h-3 w-3" />
-                                                <span>Tap to boost energy</span>
-                                            </motion.button>
-                                        )}
                                     </CardContent>
                                 </Card>
                             </motion.div>
@@ -319,23 +293,101 @@ export const Page = (): JSX.Element => {
                     </div>
                 </section>
 
-                {/* Playlist - Upcoming Tracks */}
-                <section>
-                    <div className="flex justify-between items-center mb-3">
-                        <h2
-                            className="text-lg font-semibold flex items-center gap-2"
-                            style={{ fontFamily: font.heading }}
-                        >
-                            <Music className="h-5 w-5 text-primary" />
-                            Playlist
-                        </h2>
-                        <Button variant="ghost" size="sm" onClick={() => navigate("/meal-logger")}>
-                            View all <ChevronRight className="h-4 w-4 ml-1" />
-                        </Button>
-                    </div>
-                    <div className="space-y-3">
-                        <AnimatePresence>
-                            {upcomingMeals.map((track, index) => (
+                {/* Current Workout Plan */}
+                <SlideUp>
+                    <section>
+                        <div className="flex items-center justify-between mb-3">
+                            <h2
+                                className="text-lg font-semibold flex items-center gap-2"
+                                style={{ fontFamily: font.heading }}
+                            >
+                                <Dumbbell className="h-5 w-5 text-primary" />
+                                Your Workout Plan
+                            </h2>
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => navigate('/workouts')}
+                                className="text-xs"
+                            >
+                                View All
+                                <ChevronRight className="ml-1 h-4 w-4" />
+                            </Button>
+                        </div>
+
+                        <div className="dashboard-grid">
+                            {activeWorkouts.map((workout, index) => (
+                                <motion.div
+                                    key={workout.id}
+                                    whileHover={{ y: -5 }}
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: index * 0.1 }}
+                                >
+                                    <Card
+                                        className="overflow-hidden border-primary/10 h-full cursor-pointer"
+                                        onClick={() => navigate('/workouts')}
+                                    >
+                                        <div className="relative h-32 overflow-hidden">
+                                            <img
+                                                src={workout.image}
+                                                alt={workout.title}
+                                                className="w-full h-full object-cover"
+                                            />
+                                            <div className="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black/70 to-transparent">
+                                                <p className="text-white font-medium">
+                                                    {workout.title}
+                                                </p>
+                                            </div>
+                                            <div className="absolute top-2 right-2 bg-background/80 backdrop-blur-sm py-1 px-2 rounded-full text-xs font-medium">
+                                                {workout.duration}
+                                            </div>
+                                        </div>
+                                        <CardContent className="p-3">
+                                            <div className="flex justify-between items-center">
+                                                <div className="text-sm text-muted-foreground">
+                                                    {workout.difficulty} • {workout.calories} cal
+                                                </div>
+                                                <Button
+                                                    variant="secondary"
+                                                    size="sm"
+                                                    className="h-8 w-8 rounded-full p-0"
+                                                >
+                                                    <Play className="h-4 w-4" />
+                                                </Button>
+                                            </div>
+                                        </CardContent>
+                                    </Card>
+                                </motion.div>
+                            ))}
+                        </div>
+                    </section>
+                </SlideUp>
+
+                {/* Upcoming Meals */}
+                <SlideUp delay={0.3}>
+                    <section>
+                        <div className="flex items-center justify-between mb-3">
+                            <h2
+                                className="text-lg font-semibold flex items-center gap-2"
+                                style={{ fontFamily: font.heading }}
+                            >
+                                <Calendar className="h-5 w-5 text-primary" />
+                                Upcoming Meals
+                            </h2>
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => navigate('/meal-logger')}
+                                className="text-xs"
+                            >
+                                View All
+                                <ChevronRight className="ml-1 h-4 w-4" />
+                            </Button>
+                        </div>
+
+                        <div className="space-y-3">
+                            {upcomingMeals.map((meal, index) => (
                                 <motion.div
                                     key={index}
                                     initial={{ opacity: 0, x: -20 }}
@@ -352,210 +404,45 @@ export const Page = (): JSX.Element => {
                                                 index === 1 ? 'bg-secondary/20' :
                                                     'bg-accent/20'
                                                 }`}>
-                                                <PlayCircle className={`h-6 w-6 ${index === 0 ? 'text-primary' :
+                                                <Heart className={`h-6 w-6 ${index === 0 ? 'text-primary' :
                                                     index === 1 ? 'text-secondary' :
                                                         'text-accent'
                                                     }`} />
                                             </div>
                                             <div className="flex-grow">
-                                                <div className="flex justify-between items-start">
-                                                    <div>
-                                                        <p
-                                                            className="font-medium"
-                                                            style={{ fontFamily: font.heading }}
-                                                        >
-                                                            {track.name}
-                                                            {index === 0 && showEqualizer && <EqualizerAnimation />}
-                                                        </p>
-                                                        <p className="text-sm text-muted-foreground">{track.description}</p>
-                                                    </div>
-                                                    <div className="text-right flex flex-col items-end">
-                                                        <span className="text-xs text-muted-foreground">{track.time}</span>
-                                                        <span className="text-xs font-semibold">{track.duration}</span>
-                                                    </div>
+                                                <div className="flex justify-between">
+                                                    <p
+                                                        className="font-semibold"
+                                                        style={{ fontFamily: font.heading }}
+                                                    >
+                                                        {meal.name}
+                                                    </p>
+                                                    <p className="text-sm text-muted-foreground">{meal.time}</p>
                                                 </div>
-
-                                                {index === 0 && (
-                                                    <div className="mt-2 h-1 bg-muted/50 rounded-full overflow-hidden">
-                                                        <motion.div
-                                                            className={`h-full ${index === 0 ? 'bg-primary' : index === 1 ? 'bg-secondary' : 'bg-accent'}`}
-                                                            initial={{ width: "0%" }}
-                                                            animate={{ width: "45%" }}
-                                                            transition={{ duration: 2, repeat: Infinity, repeatType: "reverse" }}
-                                                        />
-                                                    </div>
-                                                )}
+                                                <p className="text-sm text-muted-foreground mt-1">{meal.description}</p>
+                                                <p className="text-xs text-muted-foreground mt-1">
+                                                    {meal.calories} calories
+                                                </p>
                                             </div>
                                         </CardContent>
                                     </Card>
                                 </motion.div>
                             ))}
-                        </AnimatePresence>
-                    </div>
-                </section>
 
-                {/* Featured Mixes - NEW SECTION */}
-                <SlideUp delay={0.3}>
-                    <section>
-                        <div className="flex justify-between items-center mb-3">
-                            <h2
-                                className="text-lg font-semibold flex items-center gap-2"
-                                style={{ fontFamily: font.heading }}
-                            >
-                                <Headphones className="h-5 w-5 text-primary" />
-                                Featured Mixes
-                            </h2>
-                            <Button variant="ghost" size="sm" onClick={() => navigate("/diet-plans")}>
-                                See all <ChevronRight className="h-4 w-4 ml-1" />
-                            </Button>
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-3">
-                            {[
-                                {
-                                    title: "Morning Energy",
-                                    description: "Breakfast & workout plan",
-                                    duration: "45 min",
-                                    path: "/diet-plans",
-                                    color: "primary",
-                                    image: "https://images.unsplash.com/photo-1490645935967-10de6ba17061?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80"
-                                },
-                                {
-                                    title: "Weekend Vibes",
-                                    description: "Balanced nutrition & relaxation",
-                                    duration: "60 min",
-                                    path: "/diet-plans",
-                                    color: "secondary",
-                                    image: "https://images.unsplash.com/photo-1515023115689-589c33041d3c?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80"
-                                },
-                                {
-                                    title: "Power Hour",
-                                    description: "High-intensity & protein focus",
-                                    duration: "65 min",
-                                    path: "/workouts",
-                                    color: "accent",
-                                    image: "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80"
-                                },
-                                {
-                                    title: "Mindful Mix",
-                                    description: "Stress reduction & nutrition",
-                                    duration: "30 min",
-                                    path: "/ai-assistant",
-                                    color: "primary",
-                                    image: "https://images.unsplash.com/photo-1574894709920-11b28e7367e3?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80"
-                                }
-                            ].map((mix, index) => (
-                                <motion.div
-                                    key={index}
-                                    whileHover={{ y: -5 }}
-                                    whileTap={{ scale: 0.95 }}
-                                    initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: index * 0.1 }}
-                                >
-                                    <Card
-                                        className="cursor-pointer card-hover overflow-hidden border-primary/10"
-                                        onClick={() => navigate(mix.path)}
-                                    >
-                                        <div className="relative h-24 overflow-hidden">
-                                            <img
-                                                src={mix.image}
-                                                alt={mix.title}
-                                                className="w-full h-full object-cover transition-transform hover:scale-110"
-                                            />
-                                            <div className="absolute bottom-0 right-0 px-2 py-1 bg-background/80 backdrop-blur-sm text-xs font-medium">
-                                                {mix.duration}
-                                            </div>
-                                        </div>
-                                        <CardContent className="p-3">
-                                            <p
-                                                className="font-semibold text-sm line-clamp-1"
-                                                style={{ fontFamily: font.heading }}
-                                            >
-                                                {mix.title}
-                                            </p>
-                                            <p className="text-xs text-muted-foreground line-clamp-1">
-                                                {mix.description}
-                                            </p>
-                                        </CardContent>
-                                    </Card>
-                                </motion.div>
-                            ))}
-                        </div>
-                    </section>
-                </SlideUp>
-
-                {/* Daily Challenge - NEW SECTION */}
-                <SlideUp delay={0.5}>
-                    <section>
-                        <Card className="bg-secondary/10 border-secondary/20 overflow-hidden">
-                            <CardContent className="p-0">
-                                <div className="flex items-center">
-                                    <div className="p-4 flex-grow">
-                                        <div className="flex items-center gap-2 mb-1">
-                                            <Trophy className="h-4 w-4 text-secondary" />
-                                            <p className="text-xs text-secondary font-semibold">DAILY CHALLENGE</p>
-                                        </div>
-                                        <h3
-                                            className="text-base font-bold mb-1"
-                                            style={{ fontFamily: font.heading }}
-                                        >
-                                            Complete Your Rhythm
-                                        </h3>
-                                        <p className="text-sm text-muted-foreground">
-                                            Log 3 meals today to unlock XP bonus
-                                        </p>
-                                        <div className="mt-2 flex items-center gap-2">
-                                            <div className="h-2 bg-muted rounded-full overflow-hidden flex-grow">
-                                                <motion.div
-                                                    className="h-full bg-secondary"
-                                                    initial={{ width: "0%" }}
-                                                    animate={{ width: "66%" }}
-                                                    transition={{ duration: 1 }}
-                                                />
-                                            </div>
-                                            <span className="text-xs font-medium">2/3</span>
-                                        </div>
-                                        <Button
-                                            className="mt-3 bg-secondary hover:bg-secondary/90 text-secondary-foreground"
-                                            size="sm"
-                                            onClick={() => navigate('/meal-logger')}
-                                        >
-                                            Log Meal
+                            {upcomingMeals.length === 0 && (
+                                <Card className="border-dashed border-border">
+                                    <CardContent className="p-6 flex flex-col items-center justify-center">
+                                        <p className="text-muted-foreground text-center mb-4">No upcoming meals scheduled</p>
+                                        <Button onClick={() => navigate('/meal-logger')}>
+                                            <Plus className="mr-2 h-4 w-4" />
+                                            Add Meal
                                         </Button>
-                                    </div>
-                                    <div className="hidden sm:block w-24 h-full bg-gradient-to-r from-transparent to-secondary/20 p-4">
-                                        <div className="flex items-center justify-center h-full">
-                                            <motion.div
-                                                animate={{ rotate: 360 }}
-                                                transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                                            >
-                                                <Timer className="h-12 w-12 text-secondary/60" />
-                                            </motion.div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </CardContent>
-                        </Card>
+                                    </CardContent>
+                                </Card>
+                            )}
+                        </div>
                     </section>
                 </SlideUp>
-
-                {/* Add Track Button */}
-                <motion.div
-                    className="fixed bottom-24 right-6 z-10"
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.9 }}
-                >
-                    <Button
-                        className="h-14 w-14 rounded-full shadow-lg pulse-glow"
-                        onClick={() => navigate('/meal-logger')}
-                        style={{
-                            background: `linear-gradient(135deg, ${colors.primary}, ${colors.accent})`,
-                        }}
-                    >
-                        <Plus className="h-6 w-6 text-white" />
-                    </Button>
-                </motion.div>
             </main>
         </div>
     );

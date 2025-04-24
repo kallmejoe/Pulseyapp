@@ -10,6 +10,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useMeals } from "../../context/MealContext";
 import { useTheme } from "../../context/ThemeContext";
 import { FadeIn, SlideUp, ScaleIn } from "../../lib/animations";
+import { useAuth } from "../../context/AuthContext";
 
 export const Profile = (): JSX.Element => {
     const navigate = useNavigate();
@@ -24,6 +25,7 @@ export const Profile = (): JSX.Element => {
         colors,
         font
     } = useTheme();
+    const { logout } = useAuth();
 
     // User profile data (in a real app, this would come from a database or API)
     const [userData] = useState({
@@ -417,7 +419,10 @@ export const Profile = (): JSX.Element => {
                     <Button
                         variant="destructive"
                         className="w-full"
-                        onClick={() => navigate("/")}
+                        onClick={() => {
+                            logout();
+                            navigate("/login");
+                        }}
                     >
                         <LogOut className="h-5 w-5 mr-2" />
                         Logout

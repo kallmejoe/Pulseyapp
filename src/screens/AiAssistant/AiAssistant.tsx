@@ -9,11 +9,12 @@ import {
   Plus,
   Utensils,
   Calendar,
-  MoreVertical,
+  Activity,
   ChevronRight,
   Bot,
   User,
-  XCircle
+  XCircle,
+  Droplets
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useMeals } from "../../context/MealContext";
@@ -71,7 +72,7 @@ export const AiAssistant = (): JSX.Element => {
       id: "water",
       label: "Add Water",
       prompt: "I want to log water intake",
-      icon: <Utensils className="h-4 w-4" />
+      icon: <Droplets className="h-4 w-4" />
     }
   ];
 
@@ -80,7 +81,7 @@ export const AiAssistant = (): JSX.Element => {
     {
       id: "1",
       type: "assistant",
-      content: "Hello! I'm your AI nutrition assistant. How can I help you today?",
+      content: "Hello! I'm your PULSE health coach. How can I help you today?",
       timestamp: new Date(),
     }
   ]);
@@ -376,10 +377,10 @@ export const AiAssistant = (): JSX.Element => {
       <header className="sticky top-0 z-30 bg-background/80 backdrop-blur-md border-b border-border">
         <div className="px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-2">
-          <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
+            <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
               <ArrowLeft className="h-5 w-5" />
-          </Button>
-            <h1 className="text-lg font-semibold">AI Health Assistant</h1>
+            </Button>
+            <h1 className="text-lg font-semibold">Health Coach</h1>
           </div>
         </div>
       </header>
@@ -387,21 +388,21 @@ export const AiAssistant = (): JSX.Element => {
       <main className="flex-1 p-4 overflow-y-auto">
         <AnimatePresence>
           <div className="space-y-4 pb-20">
-          {messages.map((message, index) => (
+            {messages.map((message, index) => (
               <motion.div
                 key={message.id}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.2 }}
-              className={`flex ${
-                message.type === "user" ? "justify-end" : "justify-start"
-              }`}
-            >
+                className={`flex ${
+                  message.type === "user" ? "justify-end" : "justify-start"
+                }`}
+              >
                 <div className={`flex gap-2 max-w-[85%] ${message.type === "user" ? "flex-row-reverse" : ""}`}>
                   {message.type === "assistant" ? (
                     <Avatar className="h-8 w-8 mt-1">
-                      <AvatarFallback className="bg-primary text-primary-foreground">AI</AvatarFallback>
+                      <AvatarFallback className="bg-primary text-primary-foreground">HC</AvatarFallback>
                     </Avatar>
                   ) : (
                     <Avatar className="h-8 w-8 mt-1">
@@ -418,13 +419,13 @@ export const AiAssistant = (): JSX.Element => {
                   }`}>
                     <CardContent className="p-3">
                       {renderMessageContent(message)}
-                </CardContent>
-              </Card>
-            </div>
+                    </CardContent>
+                  </Card>
+                </div>
               </motion.div>
-          ))}
+            ))}
             <div ref={messagesEndRef} />
-        </div>
+          </div>
         </AnimatePresence>
       </main>
 
@@ -467,7 +468,7 @@ export const AiAssistant = (): JSX.Element => {
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Message AI assistant..."
+            placeholder="Ask your health coach..."
             className="flex-1 p-3 rounded-full border border-input bg-background focus:outline-none focus:ring-1 focus:ring-primary"
           />
 

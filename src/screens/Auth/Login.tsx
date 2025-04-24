@@ -53,7 +53,7 @@ export const Login: React.FC = () => {
                             WebkitTextFillColor: 'transparent'
                         }}
                     >
-                        FitSync
+                        PULSE
                     </h1>
                     <p className="text-muted-foreground">Welcome back to your health journey</p>
                 </div>
