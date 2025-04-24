@@ -1,0 +1,1 @@
+export { AvatarByAnima } from "./AvatarByAnima";
