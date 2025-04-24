@@ -17,17 +17,6 @@ export const BottomNavigation: React.FC = () => {
         { icon: <Users className="h-6 w-6" />, label: "Community", path: "/community" }
     ];
 
-    // Equalizer animation for the active item
-    const EqualizerAnimation = () => (
-        <div className="equalizer absolute -top-2 left-1/2 transform -translate-x-1/2">
-            <div className="equalizer-bar"></div>
-            <div className="equalizer-bar"></div>
-            <div className="equalizer-bar"></div>
-            <div className="equalizer-bar"></div>
-            <div className="equalizer-bar"></div>
-        </div>
-    );
-
     return (
         <motion.nav
             className="fixed bottom-0 left-0 right-0 z-50 transition-colors duration-300 mobile-nav"
@@ -45,20 +34,6 @@ export const BottomNavigation: React.FC = () => {
             }}
         >
             <div className="max-w-lg mx-auto flex justify-around items-center">
-                {/* Visual Effects Toggle Button */}
-                <motion.button
-                    className="absolute -top-6 right-4 bg-primary text-primary-foreground p-2 rounded-full shadow-lg pulse-glow"
-                    whileTap={{ scale: 0.9 }}
-                    onClick={toggleVisualsMode}
-                    aria-label={visualsMode === 'on' ? "Turn off visual effects" : "Turn on visual effects"}
-                >
-                    {visualsMode === 'on' ? (
-                        <Volume2 className="h-4 w-4" />
-                    ) : (
-                        <VolumeX className="h-4 w-4" />
-                    )}
-                </motion.button>
-
                 {/* Navigation Items */}
                 {navItems.map((item, index) => {
                     const isActive = location.pathname === item.path ||
@@ -74,14 +49,11 @@ export const BottomNavigation: React.FC = () => {
                             whileTap={{ scale: 0.9 }}
                         >
                             {isActive && (
-                                <>
-                                    <motion.div
-                                        className="absolute -top-2 left-1/2 transform -translate-x-1/2 w-10 h-1 rounded-full bg-primary"
-                                        layoutId="navigation-indicator"
-                                        transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                                    />
-                                    {visualsMode === 'on' && <EqualizerAnimation />}
-                                </>
+                                <motion.div
+                                    className="absolute -top-2 left-1/2 transform -translate-x-1/2 w-10 h-1 rounded-full bg-primary"
+                                    layoutId="navigation-indicator"
+                                    transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                                />
                             )}
 
                             <motion.div
@@ -93,19 +65,6 @@ export const BottomNavigation: React.FC = () => {
                                 className={isActive ? "relative z-10" : ""}
                             >
                                 {item.icon}
-                                {isActive && visualsMode === 'on' && (
-                                    <motion.div
-                                        className="absolute -inset-2 rounded-full"
-                                        animate={{
-                                            boxShadow: ['0 0 0px transparent', `0 0 20px ${colors.primary}80`]
-                                        }}
-                                        transition={{
-                                            repeat: Infinity,
-                                            repeatType: "reverse",
-                                            duration: 1.5
-                                        }}
-                                    />
-                                )}
                             </motion.div>
 
                             <motion.span

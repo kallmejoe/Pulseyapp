@@ -109,31 +109,44 @@
 /* Responsive layout for desktop */
 @layer components {
   .app-container {
-    @apply w-full max-w-screen-2xl mx-auto;
+    @apply w-full min-h-screen;
   }
 
+  /* Desktop layout - 3 column grid */
   .desktop-layout {
-    @apply hidden md:grid md:grid-cols-[280px_1fr] lg:grid-cols-[300px_1fr_300px];
+    display: grid;
+    grid-template-columns: 280px minmax(0, 1fr) 300px;
+    min-height: 100vh;
+  }
+
+  /* Mobile layout - single column */
+  .mobile-layout {
+    display: block;
+    width: 100%;
+    min-height: calc(100vh - 70px);
   }
 
   .main-content {
-    @apply w-full max-w-lg mx-auto md:max-w-none md:px-6 md:py-8;
+    @apply w-full px-4 md:px-6 md:py-6 overflow-y-auto;
   }
 
   .sidebar {
-    @apply hidden md:block overflow-auto p-4 border-r border-border h-screen sticky top-0;
+    @apply overflow-y-auto border-r border-border h-screen sticky top-0 bg-background;
+    width: 280px;
+    z-index: 30;
   }
 
   .right-panel {
-    @apply hidden lg:block overflow-auto p-4 border-l border-border h-screen sticky top-0;
+    @apply overflow-y-auto border-l border-border h-screen sticky top-0 bg-background;
+    width: 300px;
   }
 
   .mobile-nav {
-    @apply md:hidden;
+    @apply md:hidden fixed bottom-0 left-0 right-0 z-50;
   }
 
-  .desktop-header {
-    @apply hidden md:flex items-center justify-between p-4 h-16 border-b border-border sticky top-0 bg-background z-40;
+  .mobile-top-nav {
+    @apply md:hidden fixed top-0 left-0 right-0 z-40;
   }
 
   .card-grid-2 {
@@ -144,8 +157,46 @@
     @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4;
   }
 
+  .dashboard-grid {
+    @apply grid gap-4;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  }
+
   .app-card {
     @apply transition-all duration-300 hover:shadow-md;
+  }
+}
+
+/* Update dashboard styles to fill available space */
+.dashboard-container {
+  @apply px-4 py-4 md:p-6 w-full;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+  width: 100%;
+}
+
+/* Mobile specific styles */
+@media (max-width: 767px) {
+  .main-content {
+    padding-top: 60px;
+    padding-bottom: 80px;
+    min-height: 100vh;
+  }
+}
+
+@media (min-width: 1280px) {
+  .dashboard-grid {
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  }
+}
+
+@media (min-width: 1536px) {
+  .dashboard-grid {
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
   }
 }
 

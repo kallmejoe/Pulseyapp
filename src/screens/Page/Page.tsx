@@ -202,7 +202,7 @@ export const Page = (): JSX.Element => {
                 </div>
             </motion.header>
 
-            <main className="max-w-lg mx-auto px-4 py-6 space-y-6">
+            <main className="w-full px-4 py-6 md:px-6 space-y-6">
                 {/* Quick Actions */}
                 <FadeIn>
                     <div className="grid grid-cols-4 gap-4">
@@ -249,7 +249,7 @@ export const Page = (): JSX.Element => {
                         <Trophy className="h-5 w-5 text-primary" />
                         Player Stats
                     </h2>
-                    <div className="grid gap-4">
+                    <div className="dashboard-grid">
                         {playerStats.map((stat, index) => (
                             <motion.div
                                 key={index}

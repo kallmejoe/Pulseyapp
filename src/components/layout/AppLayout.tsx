@@ -12,18 +12,36 @@ interface AppLayoutProps {
     children: ReactNode;
 }
 
+// User account section component that works on both mobile and desktop
+const UserAccountSection = () => {
+    const { user } = useAuth();
+    const { theme } = useTheme();
+
+    return (
+        <div className="user-account p-4 border-t border-border">
+            <div className="flex items-center gap-3">
+                <div className="avatar w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                    <User className="h-5 w-5 text-primary" />
+                </div>
+                <div className="flex-1 min-w-0">
+                    <h3 className="font-medium truncate">{user?.name || 'User'}</h3>
+                    <p className="text-xs text-muted-foreground truncate">{user?.email || 'user@example.com'}</p>
+                </div>
+                <Button variant="ghost" size="icon">
+                    <Settings className="h-5 w-5" />
+                </Button>
+            </div>
+        </div>
+    );
+};
+
 // Right panel component for desktop view
 const RightPanel = () => {
     const { colors, colorTheme, setColorTheme, visualsMode, toggleVisualsMode } = useTheme();
     const { totalCalories, totalProtein, waterIntake } = useMeals();
 
     return (
-        <motion.div
-            className="right-panel bg-background border-l border-border"
-            initial={{ x: 50, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            transition={{ type: "spring", stiffness: 300, damping: 30 }}
-        >
+        <div className="right-panel">
             <div className="p-4 sticky top-0 bg-background z-10 border-b border-border">
                 <div className="flex items-center justify-between">
                     <h3 className="font-semibold">Theme</h3>
@@ -59,6 +77,7 @@ const RightPanel = () => {
                 </div>
             </div>
 
+            {/* Rest of the RightPanel content */}
             <div className="p-4">
                 <div className="flex items-center justify-between mb-6">
                     <h3 className="font-medium">Recent Activities</h3>
@@ -109,7 +128,7 @@ const RightPanel = () => {
                             />
                         </div>
                     </div>
-
+                    {/* Rest of progress bars */}
                     <div>
                         <div className="flex justify-between text-sm mb-1">
                             <span>Protein</span>
@@ -169,68 +188,59 @@ const RightPanel = () => {
                     </div>
                 </div>
             </div>
-        </motion.div>
+        </div>
     );
 };
 
 export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
     const location = useLocation();
-    const { theme, toggleTheme, colors, visualsMode } = useTheme();
+    const { theme, toggleTheme, colors } = useTheme();
     const { isAuthenticated } = useAuth();
+    const [isMobile, setIsMobile] = useState(false);
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-    const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
 
-    // Handle resize events
+    // Handle resize events more reliably
     useEffect(() => {
         const handleResize = () => {
-            setIsMobile(window.innerWidth < 768);
-            if (window.innerWidth < 1024) {
+            const width = window.innerWidth;
+            setIsMobile(width < 768);
+
+            // Keep sidebar open on desktop, closed on mobile
+            if (width < 768) {
                 setIsSidebarOpen(false);
             } else {
                 setIsSidebarOpen(true);
             }
         };
 
-        window.addEventListener('resize', handleResize);
-        handleResize(); // Initialize
+        // Set initial values
+        handleResize();
 
+        // Add event listener
+        window.addEventListener('resize', handleResize);
+
+        // Cleanup
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
     // Check if we should show navigation
     const showNavigation = !["/login", "/signup"].includes(location.pathname);
-
-    // Is this the login or signup page?
     const isAuthPage = ["/login", "/signup"].includes(location.pathname);
 
+    // Redirect to login if not authenticated
     if (!isAuthenticated && !isAuthPage) {
         return <Navigate to="/login" />;
     }
 
     return (
-        <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
-            {!isAuthPage && (
-                <motion.header
-                    className="desktop-header bg-background/95 backdrop-blur-sm z-50 sticky top-0 border-b border-border"
-                    initial={{ y: -20, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    transition={{ duration: 0.3 }}
-                >
-                    <div className="flex items-center gap-4 w-full max-w-screen-2xl mx-auto px-4 h-16">
-                        {!isMobile && (
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                                className="mr-2"
-                            >
-                                {isSidebarOpen ? <PanelLeft className="h-5 w-5" /> : <PanelLeft className="h-5 w-5" />}
-                            </Button>
-                        )}
-
+        <div className="app-container min-h-screen bg-background text-foreground transition-colors duration-300">
+            {/* Top navigation for mobile */}
+            {showNavigation && isMobile && (
+                <div className="mobile-top-nav fixed top-0 left-0 right-0 z-40 bg-background/80 backdrop-blur-md border-b border-border">
+                    <div className="flex items-center justify-between p-4">
                         <Link to="/" className="font-bold text-xl">
                             <span className="flex items-center gap-2">
-                                <Zap className="h-6 w-6 text-primary" />
+                                <Zap className="h-5 w-5 text-primary" />
                                 <span className="gradient-text" style={{
                                     background: `linear-gradient(to right, ${colors.primary}, ${colors.accent})`,
                                     WebkitBackgroundClip: 'text',
@@ -240,63 +250,55 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
                                 </span>
                             </span>
                         </Link>
-
-                        <div className="relative max-w-md w-full ml-8 hidden md:block">
-                            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                            <input
-                                type="search"
-                                placeholder="Search for workouts, meals, etc."
-                                className="w-full py-2 pl-10 pr-4 rounded-full bg-muted/30 border border-border focus:outline-none focus:ring-2 focus:ring-primary/20 text-sm"
-                            />
-                        </div>
-
-                        <div className="ml-auto flex items-center gap-2">
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={toggleTheme}
-                                className="hidden md:flex"
-                            >
-                                {theme === 'light' ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
+                        <div className="flex items-center gap-2">
+                            <Button variant="ghost" size="icon" onClick={toggleTheme}>
+                                {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
                             </Button>
-
-                            <Button variant="ghost" size="icon" className="relative hidden md:flex">
-                                <Bell className="h-5 w-5" />
-                                <span className="absolute -top-1 -right-1 w-4 h-4 bg-primary text-[10px] text-white rounded-full flex items-center justify-center">
-                                    3
-                                </span>
-                            </Button>
-
-                            <Button variant="ghost" size="icon" className="hidden md:flex">
-                                <Settings className="h-5 w-5" />
-                            </Button>
-
-                            <Button variant="ghost" size="icon" asChild>
-                                <Link to="/profile">
-                                    <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                                        <User className="h-4 w-4 text-primary" />
-                                    </div>
-                                </Link>
-                            </Button>
+                            <Link to="/profile">
+                                <Button variant="ghost" size="icon">
+                                    <User className="h-5 w-5" />
+                                </Button>
+                            </Link>
                         </div>
                     </div>
-                </motion.header>
+                </div>
             )}
 
-            <div className={`${isAuthPage ? "" : "desktop-layout"} ${isSidebarOpen ? 'sidebar-open' : 'sidebar-closed'}`}>
-                {/* Desktop-only sidebar */}
+            {/* Main layout container - conditional rendering for mobile/desktop */}
+            <div className={`${isAuthPage ? "" : (isMobile ? "mobile-layout" : "desktop-layout")}`}>
+                {/* Desktop sidebar with navigation - always visible on desktop, hidden on mobile */}
                 {showNavigation && !isAuthPage && !isMobile && (
-                    <AnimatePresence>
-                        {isSidebarOpen && <DesktopNavigation />}
-                    </AnimatePresence>
+                    <div className="sidebar">
+                        <div className="p-4 mb-6">
+                            <Link to="/" className="font-bold text-xl">
+                                <span className="flex items-center gap-2">
+                                    <Zap className="h-6 w-6 text-primary" />
+                                    <span className="gradient-text" style={{
+                                        background: `linear-gradient(to right, ${colors.primary}, ${colors.accent})`,
+                                        WebkitBackgroundClip: 'text',
+                                        WebkitTextFillColor: 'transparent'
+                                    }}>
+                                        FitSync
+                                    </span>
+                                </span>
+                            </Link>
+                        </div>
+                        <DesktopNavigation />
+                        <UserAccountSection />
+                    </div>
                 )}
 
-                <main className={`min-h-screen ${isAuthPage ? "" : "pb-24 md:pb-0 main-content"}`}>
+                {/* Main content */}
+                <main className={`main-content ${isAuthPage ? "" : "pb-20 md:pb-4"} ${isMobile ? "pt-16" : "pt-4"}`}>
                     {children}
                 </main>
 
                 {/* Desktop-only right panel */}
-                {showNavigation && !isAuthPage && !isMobile && <RightPanel />}
+                {showNavigation && !isAuthPage && !isMobile && (
+                    <div className="right-panel">
+                        <RightPanel />
+                    </div>
+                )}
             </div>
 
             {/* Mobile-only bottom navigation */}
