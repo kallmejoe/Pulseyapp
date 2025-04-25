@@ -5,13 +5,14 @@ import { Card, CardContent } from "../../components/ui/card";
 import { motion } from "framer-motion";
 import { useTheme } from "../../context/ThemeContext";
 import { useAuth } from "../../context/AuthContext";
-import { Eye, EyeOff, Mail, Lock, ArrowRight } from "lucide-react";
+import { Eye, EyeOff, Mail, Lock, ArrowRight, AlertCircle } from "lucide-react";
 
 export const Login: React.FC = () => {
     const navigate = useNavigate();
     const { colors, theme } = useTheme();
-    const { login } = useAuth();
+    const { login, error } = useAuth();
     const [showPassword, setShowPassword] = useState(false);
+    const [formError, setFormError] = useState<string | null>(null);
     const [formData, setFormData] = useState({
         email: "",
         password: "",

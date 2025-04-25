@@ -37,7 +37,7 @@ const UserAccountSection = () => {
 
 // Right panel component for desktop view
 const RightPanel = () => {
-    const { colors, colorTheme, setColorTheme, visualsMode, toggleVisualsMode } = useTheme();
+    const { colors, colorTheme, setColorTheme } = useTheme();
     const { totalCalories, totalProtein, waterIntake } = useMeals();
 
     return (
@@ -45,14 +45,6 @@ const RightPanel = () => {
             <div className="p-4 sticky top-0 bg-background z-10 border-b border-border">
                 <div className="flex items-center justify-between">
                     <h3 className="font-semibold">Theme</h3>
-                    <Button variant="ghost" size="sm" onClick={toggleVisualsMode}>
-                        {visualsMode === 'on' ? (
-                            <Volume2 className="h-4 w-4 text-primary" />
-                        ) : (
-                            <Music className="h-4 w-4 text-muted-foreground" />
-                        )}
-                        <span className="ml-2 text-sm">{visualsMode === 'on' ? 'Visuals On' : 'Visuals Off'}</span>
-                    </Button>
                 </div>
 
                 <div className="mt-4 grid grid-cols-4 gap-2">
@@ -171,13 +163,6 @@ const RightPanel = () => {
 
             <div className="mt-6 p-4">
                 <div className="bg-card border border-border rounded-xl p-4 relative overflow-hidden">
-                    {visualsMode === 'on' && (
-                        <div className="absolute -bottom-6 -right-6 w-24 h-24 rounded-full" style={{
-                            background: `radial-gradient(circle, ${colors.primary}20 0%, transparent 70%)`,
-                            animation: 'pulse 4s infinite'
-                        }}></div>
-                    )}
-
                     <h3 className="font-medium mb-2 flex items-center gap-2">
                         <Bell className="h-4 w-4 text-primary" />
                         Upcoming
