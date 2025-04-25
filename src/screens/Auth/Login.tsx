@@ -27,14 +27,23 @@ export const Login: React.FC = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsSubmitting(true);
+        setFormError(null);
 
-        // Simulate login process
-        setTimeout(() => {
-            // In a real app, you would validate credentials with a server here
-            login(formData.email, formData.password); // Set authentication state
+        try {
+            // Call the login function and wait for it to complete
+            const success = await login(formData.email, formData.password);
+
+            if (success) {
+                navigate("/");
+            } else {
+                setFormError("Login failed. Please check your credentials.");
+            }
+        } catch (err) {
+            setFormError("An error occurred during login.");
+            console.error(err);
+        } finally {
             setIsSubmitting(false);
-            navigate("/");
-        }, 1500);
+        }
     };
 
     return (
@@ -62,6 +71,12 @@ export const Login: React.FC = () => {
                 <Card className="border border-primary/10">
                     <CardContent className="pt-6">
                         <form onSubmit={handleSubmit} className="space-y-4">
+                            {(formError || error) && (
+                                <div className="bg-destructive/10 text-destructive p-3 rounded-md flex items-center gap-2 text-sm">
+                                    <AlertCircle className="h-4 w-4" />
+                                    <span>{formError || error}</span>
+                                </div>
+                            )}
                             <div className="space-y-2">
                                 <label htmlFor="email" className="text-sm font-medium">
                                     Email

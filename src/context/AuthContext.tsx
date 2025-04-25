@@ -8,6 +8,7 @@ interface User {
     avatar: string;
     bio: string;
     membershipType: string;
+    isAdmin?: boolean; // Add isAdmin property
 }
 
 interface AuthContextType {
@@ -28,10 +29,10 @@ const defaultUser: User = {
 };
 
 // Define valid credentials
-const validCredentials = [
+const validCredentials = JSON.parse(localStorage.getItem('validCredentials') || JSON.stringify([
     { email: "user@example.com", password: "password" },
     { email: "admin@pulse.com", password: "admin123" }
-];
+]));
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -58,17 +59,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }, []);
 
     const login = async (email: string, password: string): Promise<boolean> => {
+        // Get the latest credentials from localStorage
+        const storedCredentials = localStorage.getItem('validCredentials');
+        const currentValidCredentials = storedCredentials ? JSON.parse(storedCredentials) : validCredentials;
+
         // Validate credentials
-        const isValid = validCredentials.some(
-            cred => cred.email === email && cred.password === password
+        const isValid = currentValidCredentials.some(
+            (cred: any) => cred.email === email && cred.password === password
         );
 
         if (isValid) {
+            // Look for existing user data if this is a registered user
+            const existingUserData = localStorage.getItem(`user_${email}`);
+
             // Create user data based on the email that was used
-            const userData = {
-                ...defaultUser,
+            const userData = existingUserData ? JSON.parse(existingUserData) : {
+                id: Date.now().toString(),
+                name: email === "admin@pulse.com" ? "Admin User" : email.split('@')[0],
                 email: email,
-                name: email === "admin@pulse.com" ? "Admin User" : "John Doe"
+                avatar: "https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg",
+                bio: "Fitness Enthusiast",
+                membershipType: email === "admin@pulse.com" ? "Admin" : "Free",
+                isAdmin: email === "admin@pulse.com" // Set isAdmin flag based on email
             };
 
             setIsAuthenticated(true);
@@ -77,6 +89,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
             localStorage.setItem('isAuthenticated', 'true');
             localStorage.setItem('user', JSON.stringify(userData));
+
+            // Also store user-specific data with a unique key
+            if (!existingUserData) {
+                localStorage.setItem(`user_${email}`, JSON.stringify(userData));
+            }
 
             return true;
         } else {

@@ -16,12 +16,23 @@ export const Profile = (): JSX.Element => {
     const navigate = useNavigate();
     const { meals, totalCalories, totalProtein, waterIntake, workouts } = useMeals();
     const { theme, toggleTheme, colors, font } = useTheme();
-    const { logout, user } = useAuth();
+    const { logout, user, isAuthenticated } = useAuth();
 
-    // If there's no user data (which shouldn't happen if authenticated), redirect to login
+    // If there's no user data, redirect to login
+    React.useEffect(() => {
+        if (!isAuthenticated || !user) {
+            navigate('/login');
+        }
+    }, [isAuthenticated, user, navigate]);
+
+    // If user data is not loaded yet, show loading
     if (!user) {
-        navigate('/login');
-        return <div>Redirecting...</div>;
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full"></div>
+                <span className="ml-2">Loading profile...</span>
+            </div>
+        );
     }
 
     // Calculate workout stats
@@ -29,7 +40,7 @@ export const Profile = (): JSX.Element => {
     const enrolledWorkouts = workouts.filter(workout => workout.enrolled).length;
 
     // Check for admin user
-    const isAdmin = user.email === "admin@pulse.com";
+    const isAdmin = user.isAdmin === true;
 
     // Create the menu items
     const menuItems = [
