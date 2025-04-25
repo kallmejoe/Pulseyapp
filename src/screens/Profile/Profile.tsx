@@ -237,34 +237,32 @@ export const Profile = (): JSX.Element => {
                 {/* Menu Items */}
                 <Card className="overflow-hidden border border-primary/10">
                     <CardContent className="p-0">
-                        {menuItems.map((item, index) => (
-                            <div
-                                key={index}
-                                className="border-b last:border-0 border-border"
-                            >
+                        <div className="divide-y divide-border">
+                            {menuItems.map((item, index) => (
                                 <Button
+                                    key={index}
                                     variant="ghost"
-                                    className="w-full flex items-center justify-between p-4 hover:bg-muted/20"
+                                    className="w-full flex items-center justify-between py-4 px-5 hover:bg-muted/20 rounded-none h-auto"
                                     onClick={() => navigate(item.path)}
                                 >
-                                    <div className="flex items-center gap-3">
-                                        <div className={`p-2 rounded-full ${item.color}`}>
+                                    <div className="flex items-center gap-4">
+                                        <div className={`p-3 rounded-full ${item.color}`}>
                                             {item.icon}
                                         </div>
                                         <div className="text-left">
                                             <p
-                                                className="font-medium"
+                                                className="font-medium text-base"
                                                 style={{ fontFamily: font.heading }}
                                             >
                                                 {item.label}
                                             </p>
-                                            <p className="text-sm text-muted-foreground">{item.description}</p>
+                                            <p className="text-sm text-muted-foreground mt-1">{item.description}</p>
                                         </div>
                                     </div>
-                                    <ChevronRight className="h-5 w-5 text-muted-foreground" />
+                                    <ChevronRight className="h-5 w-5 text-muted-foreground opacity-60" />
                                 </Button>
-                            </div>
-                        ))}
+                            ))}
+                        </div>
                     </CardContent>
                 </Card>
 

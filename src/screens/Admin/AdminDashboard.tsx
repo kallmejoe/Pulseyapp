@@ -35,7 +35,7 @@ import { useTheme } from "../../context/ThemeContext";
 export const AdminDashboard: React.FC = () => {
     const navigate = useNavigate();
     const { user } = useAuth();
-    const { colors, theme, font } = useTheme();
+    const { colors, theme, font, toggleTheme, colorTheme, setColorTheme } = useTheme();
     const [activeTab, setActiveTab] = useState("overview");
     const [loading, setLoading] = useState(false);
 
@@ -232,8 +232,8 @@ export const AdminDashboard: React.FC = () => {
                             <button
                                 key={tab.id}
                                 className={`px-4 py-2 flex items-center gap-2 text-sm font-medium ${activeTab === tab.id
-                                        ? 'border-b-2 border-primary text-primary'
-                                        : 'text-muted-foreground hover:text-foreground'
+                                    ? 'border-b-2 border-primary text-primary'
+                                    : 'text-muted-foreground hover:text-foreground'
                                     }`}
                                 onClick={() => setActiveTab(tab.id)}
                             >
@@ -469,20 +469,20 @@ export const AdminDashboard: React.FC = () => {
                                                     <td className="py-3 px-4">{user.email}</td>
                                                     <td className="py-3 px-4">
                                                         <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${user.status === 'active'
-                                                                ? 'bg-green-100 text-green-800'
-                                                                : user.status === 'inactive'
-                                                                    ? 'bg-gray-100 text-gray-800'
-                                                                    : 'bg-red-100 text-red-800'
+                                                            ? 'bg-green-100 text-green-800'
+                                                            : user.status === 'inactive'
+                                                                ? 'bg-gray-100 text-gray-800'
+                                                                : 'bg-red-100 text-red-800'
                                                             }`}>
                                                             {user.status.charAt(0).toUpperCase() + user.status.slice(1)}
                                                         </span>
                                                     </td>
                                                     <td className="py-3 px-4">
                                                         <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${user.membershipType === 'Premium'
-                                                                ? 'bg-purple-100 text-purple-800'
-                                                                : user.membershipType === 'Admin'
-                                                                    ? 'bg-blue-100 text-blue-800'
-                                                                    : 'bg-gray-100 text-gray-800'
+                                                            ? 'bg-purple-100 text-purple-800'
+                                                            : user.membershipType === 'Admin'
+                                                                ? 'bg-blue-100 text-blue-800'
+                                                                : 'bg-gray-100 text-gray-800'
                                                             }`}>
                                                             {user.membershipType}
                                                         </span>
@@ -577,20 +577,20 @@ export const AdminDashboard: React.FC = () => {
                                                     <td className="py-3 px-4 font-medium">{item.title}</td>
                                                     <td className="py-3 px-4">
                                                         <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${item.type === 'workout'
-                                                                ? 'bg-blue-100 text-blue-800'
-                                                                : item.type === 'meal'
-                                                                    ? 'bg-green-100 text-green-800'
-                                                                    : 'bg-amber-100 text-amber-800'
+                                                            ? 'bg-blue-100 text-blue-800'
+                                                            : item.type === 'meal'
+                                                                ? 'bg-green-100 text-green-800'
+                                                                : 'bg-amber-100 text-amber-800'
                                                             }`}>
                                                             {item.type.charAt(0).toUpperCase() + item.type.slice(1)}
                                                         </span>
                                                     </td>
                                                     <td className="py-3 px-4">
                                                         <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${item.status === 'published'
-                                                                ? 'bg-green-100 text-green-800'
-                                                                : item.status === 'draft'
-                                                                    ? 'bg-gray-100 text-gray-800'
-                                                                    : 'bg-amber-100 text-amber-800'
+                                                            ? 'bg-green-100 text-green-800'
+                                                            : item.status === 'draft'
+                                                                ? 'bg-gray-100 text-gray-800'
+                                                                : 'bg-amber-100 text-amber-800'
                                                             }`}>
                                                             {item.status.charAt(0).toUpperCase() + item.status.slice(1)}
                                                         </span>
@@ -808,6 +808,130 @@ export const AdminDashboard: React.FC = () => {
                     </div>
                 )}
             </main>
+
+            {/* Right sidebar with theme controls */}
+            <aside className="fixed top-0 right-0 w-72 h-full bg-card shadow-lg border-l border-border overflow-y-auto">
+                <div className="p-6 space-y-6">
+                    <div>
+                        <h3 className="text-lg font-semibold mb-4" style={{ color: colors.primary, fontFamily: font.heading }}>
+                            Theme Settings
+                        </h3>
+
+                        {/* Theme toggle */}
+                        <div className="mb-6 bg-background rounded-lg p-4 shadow-sm">
+                            <span className="text-sm font-medium block mb-3">Theme Mode</span>
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={toggleTheme}
+                                className="flex items-center justify-center w-full gap-2 h-10"
+                                style={{ borderColor: colors.secondary }}
+                            >
+                                {theme === 'light' ? (
+                                    <>
+                                        <Sun className="h-4 w-4" style={{ color: colors.primary }} />
+                                        <span style={{ color: colors.primary }}>Light Mode</span>
+                                    </>
+                                ) : (
+                                    <>
+                                        <Moon className="h-4 w-4" style={{ color: colors.primary }} />
+                                        <span style={{ color: colors.primary }}>Dark Mode</span>
+                                    </>
+                                )}
+                            </Button>
+                        </div>
+
+                        {/* Color theme selector */}
+                        <div className="mb-6 bg-background rounded-lg p-4 shadow-sm">
+                            <span className="text-sm font-medium block mb-3">Color Theme</span>
+                            <div className="grid grid-cols-2 gap-3">
+                                {(['rhythm', 'energy', 'chill', 'focus'] as const).map((theme) => (
+                                    <Button
+                                        key={theme}
+                                        variant={colorTheme === theme ? "default" : "outline"}
+                                        size="sm"
+                                        onClick={() => setColorTheme(theme)}
+                                        className="capitalize h-10"
+                                        style={{
+                                            backgroundColor: colorTheme === theme ? colors.primary : 'transparent',
+                                            color: colorTheme === theme ? 'white' : colors.text,
+                                            borderColor: colorTheme === theme ? colors.primary : colors.secondary
+                                        }}
+                                    >
+                                        {theme}
+                                    </Button>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Display currently active theme */}
+                        <div
+                            className="p-4 rounded-lg text-center"
+                            style={{
+                                backgroundColor: colors.background,
+                                border: `1px solid ${colors.secondary}`,
+                                boxShadow: `0 0 10px ${colors.primary}20`,
+                            }}
+                        >
+                            <p className="text-sm font-medium mb-1" style={{ color: colors.primary }}>
+                                {colorTheme.charAt(0).toUpperCase() + colorTheme.slice(1)} Pulse
+                            </p>
+                            <p className="text-xs" style={{ color: colors.secondaryText }}>
+                                {theme === 'light' ? 'Light Mode' : 'Dark Mode'}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div className="space-y-4 border-t border-border pt-6">
+                        <h4 className="text-sm font-medium mb-2">Preview</h4>
+
+                        {/* Color palette preview */}
+                        <div className="grid grid-cols-2 gap-2">
+                            <div className="flex flex-col items-center">
+                                <div
+                                    className="w-full h-10 rounded-md mb-1"
+                                    style={{ backgroundColor: colors.primary }}
+                                ></div>
+                                <span className="text-xs text-muted-foreground">Primary</span>
+                            </div>
+                            <div className="flex flex-col items-center">
+                                <div
+                                    className="w-full h-10 rounded-md mb-1"
+                                    style={{ backgroundColor: colors.secondary }}
+                                ></div>
+                                <span className="text-xs text-muted-foreground">Secondary</span>
+                            </div>
+                            <div className="flex flex-col items-center">
+                                <div
+                                    className="w-full h-10 rounded-md mb-1"
+                                    style={{ backgroundColor: colors.accent }}
+                                ></div>
+                                <span className="text-xs text-muted-foreground">Accent</span>
+                            </div>
+                            <div className="flex flex-col items-center">
+                                <div
+                                    className="w-full h-10 rounded-md mb-1"
+                                    style={{ backgroundColor: colors.highlight }}
+                                ></div>
+                                <span className="text-xs text-muted-foreground">Highlight</span>
+                            </div>
+                        </div>
+
+                        {/* Text preview */}
+                        <div
+                            className="mt-4 p-3 rounded-lg"
+                            style={{ backgroundColor: colors.cardBackground }}
+                        >
+                            <p className="text-sm mb-1" style={{ color: colors.text, fontFamily: font.heading }}>
+                                Sample Text
+                            </p>
+                            <p className="text-xs" style={{ color: colors.secondaryText }}>
+                                This is how your text will appear with the current theme.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </aside>
         </div>
     );
 };
