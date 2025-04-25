@@ -175,12 +175,21 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
     // Apply theme to document
     useEffect(() => {
         const root = window.document.documentElement;
+        const html = window.document.documentElement;
+        const body = window.document.body;
 
-        // Remove old theme class
+        // Remove old theme class from both html and body
         root.classList.remove('light', 'dark');
+        html.classList.remove('light', 'dark');
+        body.classList.remove('light', 'dark');
 
-        // Add new theme class
+        // Add new theme class to both html and body
         root.classList.add(theme);
+        html.classList.add(theme);
+        body.classList.add(theme);
+
+        // Set the color-scheme property to help native elements like scrollbars
+        document.documentElement.style.colorScheme = theme;
 
         // Save to localStorage
         localStorage.setItem('theme', theme);

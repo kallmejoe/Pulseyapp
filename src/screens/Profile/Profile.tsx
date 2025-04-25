@@ -28,6 +28,10 @@ export const Profile = (): JSX.Element => {
     const completedWorkouts = workouts.reduce((sum, w) => sum + w.completedCount, 0);
     const enrolledWorkouts = workouts.filter(workout => workout.enrolled).length;
 
+    // Check for admin user
+    const isAdmin = user.email === "admin@pulse.com";
+
+    // Create the menu items
     const menuItems = [
         {
             icon: <User className="h-5 w-5" />,
@@ -58,6 +62,17 @@ export const Profile = (): JSX.Element => {
             color: `bg-muted/80 text-muted-foreground`
         }
     ];
+
+    // Add admin dashboard link for admin users
+    if (isAdmin) {
+        menuItems.push({
+            icon: <Shield className="h-5 w-5" />,
+            label: "Admin Dashboard",
+            description: "Manage users and content",
+            path: "/admin",
+            color: `bg-destructive/10 text-destructive`
+        });
+    }
 
     const stats = [
         {

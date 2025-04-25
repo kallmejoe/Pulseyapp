@@ -31,7 +31,7 @@ export const Login: React.FC = () => {
         // Simulate login process
         setTimeout(() => {
             // In a real app, you would validate credentials with a server here
-            login(); // Set authentication state
+            login(formData.email, formData.password); // Set authentication state
             setIsSubmitting(false);
             navigate("/");
         }, 1500);

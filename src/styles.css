@@ -345,3 +345,42 @@
 
 /* Import Inter font */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* Add this at the end of your styles.css file */
+.dark input,
+.dark textarea,
+.dark select {
+  color-scheme: dark;
+}
+
+/* Fix for dialogs, modals and overlays */
+.dark .bg-white,
+.dark [class*="bg-gray-"] {
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+}
+
+.dark .text-gray-500,
+.dark .text-gray-600,
+.dark .text-gray-700 {
+  color: hsl(var(--muted-foreground));
+}
+
+.dark .border-gray-200,
+.dark .border-gray-300 {
+  border-color: hsl(var(--border));
+}
+
+/* Ensure form elements use the correct background in dark mode */
+.dark input,
+.dark textarea,
+.dark select {
+  background-color: hsl(var(--background));
+  border-color: hsl(var(--border));
+  color: hsl(var(--foreground));
+}
+
+/* Fix focus states in dark mode */
+.dark *:focus-visible {
+  outline-color: hsl(var(--primary));
+}

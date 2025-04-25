@@ -15,8 +15,10 @@ import { Community } from "./screens/Community/Community";
 import { CommunityDetails } from "./screens/Community/CommunityDetails";
 import { AppLayout } from "./components/layout/AppLayout";
 import { FadeIn } from "./lib/animations";
+import { AdminDashboard } from "./screens/Admin/AdminDashboard";
+import { ProtectedRoute } from "./components/ProtectedRoute";
 
-// Add login and signup pages (we'll create these soon)
+// Auth pages
 import { Login } from "./screens/Auth/Login";
 import { Signup } from "./screens/Auth/Signup";
 
@@ -30,17 +32,61 @@ const App = () => {
                 <AppProvider>
                     <AppLayout>
                         <Routes>
-                            <Route path="/" element={<Page />} />
-                            <Route path="/diet-plans" element={<DietPlans />} />
-                            <Route path="/meal-logger" element={<MealLogger />} />
-                            <Route path="/workouts" element={<Workouts />} />
-                            <Route path="/ai-assistant" element={<AiAssistant />} />
-                            <Route path="/progress" element={<Progress />} />
-                            <Route path="/profile" element={<Profile />} />
-                            <Route path="/community" element={<Community />} />
-                            <Route path="/community/:id" element={<CommunityDetails />} />
+                            {/* Public routes */}
                             <Route path="/login" element={<Login />} />
                             <Route path="/signup" element={<Signup />} />
+
+                            {/* Protected routes - require authentication */}
+                            <Route path="/" element={
+                                <ProtectedRoute>
+                                    <Page />
+                                </ProtectedRoute>
+                            } />
+                            <Route path="/diet-plans" element={
+                                <ProtectedRoute>
+                                    <DietPlans />
+                                </ProtectedRoute>
+                            } />
+                            <Route path="/meal-logger" element={
+                                <ProtectedRoute>
+                                    <MealLogger />
+                                </ProtectedRoute>
+                            } />
+                            <Route path="/workouts" element={
+                                <ProtectedRoute>
+                                    <Workouts />
+                                </ProtectedRoute>
+                            } />
+                            <Route path="/ai-assistant" element={
+                                <ProtectedRoute>
+                                    <AiAssistant />
+                                </ProtectedRoute>
+                            } />
+                            <Route path="/progress" element={
+                                <ProtectedRoute>
+                                    <Progress />
+                                </ProtectedRoute>
+                            } />
+                            <Route path="/profile" element={
+                                <ProtectedRoute>
+                                    <Profile />
+                                </ProtectedRoute>
+                            } />
+                            <Route path="/community" element={
+                                <ProtectedRoute>
+                                    <Community />
+                                </ProtectedRoute>
+                            } />
+                            <Route path="/community/:id" element={
+                                <ProtectedRoute>
+                                    <CommunityDetails />
+                                </ProtectedRoute>
+                            } />
+                            <Route path="/admin" element={
+                                <ProtectedRoute requireAdmin>
+                                    <AdminDashboard />
+                                </ProtectedRoute>
+                            } />
                         </Routes>
                     </AppLayout>
                 </AppProvider>

@@ -212,11 +212,6 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
     const showNavigation = !["/login", "/signup"].includes(location.pathname);
     const isAuthPage = ["/login", "/signup"].includes(location.pathname);
 
-    // Redirect to login if not authenticated
-    if (!isAuthenticated && !isAuthPage) {
-        return <Navigate to="/login" />;
-    }
-
     return (
         <div className="app-container min-h-screen bg-background text-foreground transition-colors duration-300">
             {/* Top navigation for mobile */}
